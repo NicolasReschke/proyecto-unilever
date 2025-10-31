@@ -21,12 +21,32 @@
    SUPABASE_ANON_KEY=tu_anon_key_aqui
    ```
 
-## Ejecutar el servidor
+## Configuración inicial
 
+### 1. Instalar dependencias
 ```bash
 cd back-end
 npm install
+```
+
+### 2. Configurar variables de entorno
+Actualiza el archivo `.env` con tus credenciales de Supabase:
+```
+SUPABASE_URL=tu_project_url_aqui
+SUPABASE_ANON_KEY=tu_anon_key_aqui
+```
+
+### 3. Configurar base de datos
+```bash
+npm run setup-db
+```
+Esto creará la tabla `productos` e insertará datos de ejemplo.
+
+### 4. Ejecutar el servidor
+```bash
 npm start
+# o para desarrollo con recarga automática:
+npm run dev
 ```
 
 El servidor se ejecutará en `http://localhost:5000`
