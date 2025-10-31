@@ -23,7 +23,9 @@ function App() {
   const cargarProductos = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/productos');
+      // Usar la URL del back-end desplegado cuando esté disponible
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/productos`);
       if (response.ok) {
         const data = await response.json();
         setProductos(Array.isArray(data) ? data : []);
@@ -50,9 +52,10 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
       const url = editando
-        ? `http://localhost:5000/api/productos/${editando}`
-        : 'http://localhost:5000/api/productos';
+        ? `${API_URL}/api/productos/${editando}`
+        : `${API_URL}/api/productos`;
 
       const method = editando ? 'PUT' : 'POST';
 
@@ -97,7 +100,8 @@ function App() {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/productos/${id}`, {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/productos/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
