@@ -49,7 +49,7 @@ UPDATE productos SET stock_status = 'mucho_stock' WHERE stock > 20 AND stock_sta
 ALTER TABLE productos ALTER COLUMN stock_status SET NOT NULL;
 
 -- Paso 8: Eliminar columna stock antigua (opcional, hacer backup primero)
--- ALTER TABLE productos DROP COLUMN IF EXISTS stock;
+ALTER TABLE productos DROP COLUMN IF EXISTS stock;
 
 -- Paso 9: Crear índices si no existen
 CREATE INDEX IF NOT EXISTS idx_productos_nombre ON productos (nombre);
