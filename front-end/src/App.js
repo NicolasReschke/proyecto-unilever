@@ -231,8 +231,11 @@ function App() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Credenciales simples para demo (en producción usar JWT o similar)
-    if (loginData.username === 'admin' && loginData.password === 'admin123') {
+    // Credenciales desde variables de entorno
+    const adminUser = process.env.REACT_APP_ADMIN_USER || 'admin';
+    const adminPass = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
+
+    if (loginData.username === adminUser && loginData.password === adminPass) {
       setIsAdmin(true);
       localStorage.setItem('isAdmin', 'true'); // Guardar en localStorage
       setShowLoginModal(false);
@@ -271,8 +274,8 @@ function App() {
                 <span className="text-success me-3">
                   <i className="bi bi-shield-check"></i> Admin
                 </span>
-                <Button variant="outline-danger" size="sm" onClick={handleLogout}>
-                  <i className="bi bi-box-arrow-right"></i> Cerrar Sesión
+                <Button variant="outline-danger" size="sm" onClick={handleLogout} title="Cerrar Sesión">
+                  <i className="bi bi-door-open"></i>
                 </Button>
               </div>
             ) : (
@@ -323,7 +326,7 @@ function App() {
                   <p>Haz clic en "Agregar Producto" para comenzar.</p>
                 </Alert>
               ) : (
-                <Accordion defaultActiveKey={categorias.map((_, index) => index.toString())} alwaysOpen>
+                <Accordion defaultActiveKey={[]} alwaysOpen>
                   {categorias.map((categoria, index) => {
                     const productosCategoria = productosPorCategoria(categoria);
                     if (productosCategoria.length === 0) return null;
