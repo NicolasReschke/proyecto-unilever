@@ -169,6 +169,11 @@ function App() {
   };
 
   const productosPorCategoria = (categoriaNombre) => {
+    // Si es admin, mostrar todos los productos de la categoría
+    if (isAdmin) {
+      return productos.filter(producto => producto.categorias?.nombre === categoriaNombre);
+    }
+    // Si no es admin, mostrar solo productos críticos
     return productos.filter(producto =>
       producto.categorias?.nombre === categoriaNombre &&
       (producto.stock_status === 'sin_stock' || producto.stock_status === 'poco_stock')

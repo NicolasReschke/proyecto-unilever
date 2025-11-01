@@ -40,6 +40,49 @@ body, html {
   margin-bottom: 5px !important;
 }
 
+/* Optimizar accordion para mobile */
+.accordion-body {
+  padding: 5px !important;
+}
+
+/* Responsive navbar para pantallas pequeñas */
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 0.9rem;
+  }
+
+  .navbar-brand img {
+    height: 30px !important;
+  }
+
+  /* Texto más pequeño para admin */
+  .navbar .text-success {
+    font-size: 0.8rem;
+  }
+
+  /* Botones más pequeños */
+  .navbar .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Pantallas mínimas de 400px */
+@media (min-width: 400px) and (max-width: 576px) {
+  .container-fluid {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .card-body {
+    padding: 15px !important;
+  }
+
+  .accordion-body {
+    padding: 10px !important;
+  }
+}
+
 .card {
   border: none;
   border-radius: 15px;
