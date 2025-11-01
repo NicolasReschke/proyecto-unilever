@@ -45,6 +45,28 @@ body, html {
   padding: 5px !important;
 }
 
+/* Navbar personalizada */
+.navbar-custom {
+  padding: 0.75rem 0;
+}
+
+.navbar-custom .container-fluid {
+  max-width: 1200px;
+}
+
+.navbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.navbar-title .navbar-brand {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 /* Responsive navbar para pantallas pequeñas */
 @media (max-width: 576px) {
   .navbar-brand {
@@ -53,6 +75,12 @@ body, html {
 
   .navbar-brand img {
     height: 30px !important;
+  }
+
+  .navbar-title {
+    position: static;
+    transform: none;
+    margin: 0 auto !important;
   }
 
   /* Texto más pequeño para admin */
@@ -64,6 +92,14 @@ body, html {
   .navbar .btn-sm {
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-title {
+    position: static;
+    transform: none;
+    margin: 0 auto !important;
   }
 }
 

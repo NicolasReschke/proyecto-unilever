@@ -252,8 +252,8 @@ function App() {
   return (
     <>
       {/* Navbar con logo y login */}
-      <Navbar bg="light" expand="lg" className="mb-4 shadow-sm" style={{marginBottom: '5px'}}>
-        <Container fluid>
+      <Navbar bg="light" expand="lg" className="mb-4 shadow-sm navbar-custom" style={{marginBottom: '5px'}}>
+        <Container fluid className="px-4">
           <Navbar.Brand href="#home" className="d-flex align-items-center">
             <img
               src="/unilever-logo.png"
@@ -261,6 +261,8 @@ function App() {
               height="40"
               className="me-2"
             />
+          </Navbar.Brand>
+          <Navbar.Brand href="#home" className="mx-auto navbar-title">
             <span className="fw-bold text-primary">Gestión de Infaltables</span>
           </Navbar.Brand>
           <Nav className="ms-auto">
