@@ -232,8 +232,8 @@ function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     // Credenciales desde variables de entorno
-    const adminUser = process.env.REACT_APP_ADMIN_USER || 'admin';
-    const adminPass = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
+    const adminUser = process.env.REACT_APP_ADMIN_USER;
+    const adminPass = process.env.REACT_APP_ADMIN_PASSWORD;
 
     if (loginData.username === adminUser && loginData.password === adminPass) {
       setIsAdmin(true);
@@ -275,7 +275,7 @@ function App() {
                   <i className="bi bi-shield-check"></i> Admin
                 </span>
                 <Button variant="outline-danger" size="sm" onClick={handleLogout} title="Cerrar Sesión">
-                  <i className="bi bi-door-open"></i>
+                  <i className="↪"></i>
                 </Button>
               </div>
             ) : (
@@ -326,7 +326,7 @@ function App() {
                   <p>Haz clic en "Agregar Producto" para comenzar.</p>
                 </Alert>
               ) : (
-                <Accordion defaultActiveKey={[]} alwaysOpen>
+                <Accordion defaultActiveKey={categorias.map((_, index) => index.toString())} alwaysOpen>
                   {categorias.map((categoria, index) => {
                     const productosCategoria = productosPorCategoria(categoria);
                     if (productosCategoria.length === 0) return null;
