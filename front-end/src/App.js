@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion } from 'react-bootstrap';
 import './App.css';
 
 function App() {
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [nuevoProducto, setNuevoProducto] = useState({
     nombre: '',
-    stock: '',
+    categoria_id: '',
+    stock_status: 'stock_normal',
     fecha_pedido: '',
     imagen_url: ''
   });
@@ -14,6 +16,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
+  const [categoriasAbiertas, setCategoriasAbiertas] = useState({});
 
   // Cargar productos al iniciar
   useEffect(() => {
@@ -39,8 +42,20 @@ function App() {
         const data = await response.json();
         console.log('Datos recibidos:', data);
         setProductos(Array.isArray(data) ? data : []);
+
+        // Extraer categorías únicas de los productos
+        const categoriasUnicas = [...new Set(data.map(p => p.categorias?.nombre).filter(Boolean))];
+        setCategorias(categoriasUnicas);
+
+        // Inicializar todas las categorías como abiertas
+        const categoriasIniciales = {};
+        categoriasUnicas.forEach(cat => {
+          categoriasIniciales[cat] = true;
+        });
+        setCategoriasAbiertas(categoriasIniciales);
+
         if (data.length > 0) {
-          mostrarAlerta(`Cargados ${data.length} productos`, 'success');
+          mostrarAlerta(`Cargados ${data.length} productos en ${categoriasUnicas.length} categorías`, 'success');
         }
       } else {
         const errorText = await response.text();
@@ -101,7 +116,8 @@ function App() {
   const editarProducto = (producto) => {
     setNuevoProducto({
       nombre: producto.nombre,
-      stock: producto.stock,
+      categoria_id: producto.categoria_id || '',
+      stock_status: producto.stock_status || 'stock_normal',
       fecha_pedido: producto.fecha_pedido,
       imagen_url: producto.imagen_url || ''
     });
@@ -133,9 +149,20 @@ function App() {
   };
 
   const abrirModalAgregar = () => {
-    setNuevoProducto({ nombre: '', stock: '', fecha_pedido: '', imagen_url: '' });
+    setNuevoProducto({ nombre: '', categoria_id: '', stock_status: 'stock_normal', fecha_pedido: '', imagen_url: '' });
     setEditando(null);
     setShowModal(true);
+  };
+
+  const toggleCategoria = (categoriaNombre) => {
+    setCategoriasAbiertas(prev => ({
+      ...prev,
+      [categoriaNombre]: !prev[categoriaNombre]
+    }));
+  };
+
+  const productosPorCategoria = (categoriaNombre) => {
+    return productos.filter(producto => producto.categorias?.nombre === categoriaNombre);
   };
 
   return (
@@ -175,82 +202,125 @@ function App() {
                   <p>Haz clic en "Agregar Producto" para comenzar.</p>
                 </Alert>
               ) : (
-                <div className="table-responsive">
-                  <Table striped bordered hover>
-                    <thead className="table-dark">
-                      <tr>
-                        <th className="text-center">Imagen</th>
-                        <th>Nombre</th>
-                        <th className="text-center">Stock</th>
-                        <th className="text-center">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {productos.map((producto) => {
-                         const getStockStatus = (stock) => {
-                           if (stock === 0) return { label: 'Sin Stock', variant: 'danger' };
-                           if (stock <= 5) return { label: 'Poco Stock', variant: 'warning' };
-                           if (stock <= 20) return { label: 'Stock Normal', variant: 'info' };
-                           return { label: 'Mucho Stock', variant: 'success' };
-                         };
+                <Accordion defaultActiveKey={categorias.map((_, index) => index.toString())} alwaysOpen>
+                  {categorias.map((categoria, index) => {
+                    const productosCategoria = productosPorCategoria(categoria);
+                    if (productosCategoria.length === 0) return null;
 
-                         const stockStatus = getStockStatus(producto.stock);
+                    return (
+                      <Accordion.Item key={categoria} eventKey={index.toString()}>
+                        <Accordion.Header>
+                          <div className="d-flex justify-content-between align-items-center w-100 me-3">
+                            <span><strong>{categoria}</strong> ({productosCategoria.length} productos)</span>
+                            <div className="d-flex gap-2">
+                              {productosCategoria.map(producto => {
+                                const getStockColor = (status) => {
+                                  switch (status) {
+                                    case 'sin_stock': return 'danger';
+                                    case 'poco_stock': return 'warning';
+                                    case 'stock_normal': return 'info';
+                                    case 'mucho_stock': return 'success';
+                                    default: return 'secondary';
+                                  }
+                                };
+                                return (
+                                  <span
+                                    key={producto.id}
+                                    className={`badge bg-${getStockColor(producto.stock_status)}`}
+                                    style={{fontSize: '0.7em'}}
+                                  >
+                                    ●
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </Accordion.Header>
+                        <Accordion.Body>
+                          <div className="table-responsive">
+                            <Table striped bordered hover size="sm">
+                              <thead className="table-dark">
+                                <tr>
+                                  <th className="text-center">Imagen</th>
+                                  <th>Nombre</th>
+                                  <th className="text-center">Stock</th>
+                                  <th className="text-center">Acciones</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {productosCategoria.map((producto) => {
+                                  const getStockStatus = (status) => {
+                                    switch (status) {
+                                      case 'sin_stock': return { label: 'Sin Stock', variant: 'danger' };
+                                      case 'poco_stock': return { label: 'Poco Stock', variant: 'warning' };
+                                      case 'stock_normal': return { label: 'Stock Normal', variant: 'info' };
+                                      case 'mucho_stock': return { label: 'Mucho Stock', variant: 'success' };
+                                      default: return { label: 'Desconocido', variant: 'secondary' };
+                                    }
+                                  };
 
-                         return (
-                           <tr key={producto.id}>
-                             <td className="text-center">
-                               {producto.imagen_url ? (
-                                 <img
-                                   src={producto.imagen_url}
-                                   alt={producto.nombre}
-                                   style={{width: '60px', height: '60px', objectFit: 'cover'}}
-                                   className="rounded"
-                                 />
-                               ) : (
-                                 <div
-                                   className="bg-light d-flex align-items-center justify-content-center rounded"
-                                   style={{width: '60px', height: '60px'}}
-                                 >
-                                   <span className="text-muted">📦</span>
-                                 </div>
-                               )}
-                             </td>
-                             <td>
-                               <strong>{producto.nombre}</strong>
-                             </td>
-                             <td className="text-center">
-                               <span className={`badge bg-${stockStatus.variant} px-2 py-1`}>
-                                 {stockStatus.label}
-                               </span>
-                             </td>
-                             <td className="text-center">
-                               <div className="btn-group btn-group-sm">
-                                 <Button
-                                   variant="outline-primary"
-                                   size="sm"
-                                   onClick={() => editarProducto(producto)}
-                                   disabled={loading}
-                                   title="Editar producto"
-                                 >
-                                   ✏️
-                                 </Button>
-                                 <Button
-                                   variant="outline-danger"
-                                   size="sm"
-                                   onClick={() => eliminarProducto(producto.id)}
-                                   disabled={loading}
-                                   title="Eliminar producto"
-                                 >
-                                   🗑️
-                                 </Button>
-                               </div>
-                             </td>
-                           </tr>
-                         );
-                       })}
-                    </tbody>
-                  </Table>
-                </div>
+                                  const stockStatus = getStockStatus(producto.stock_status);
+
+                                  return (
+                                    <tr key={producto.id}>
+                                      <td className="text-center">
+                                        {producto.imagen_url ? (
+                                          <img
+                                            src={producto.imagen_url}
+                                            alt={producto.nombre}
+                                            style={{width: '50px', height: '50px', objectFit: 'cover'}}
+                                            className="rounded"
+                                          />
+                                        ) : (
+                                          <div
+                                            className="bg-light d-flex align-items-center justify-content-center rounded"
+                                            style={{width: '50px', height: '50px'}}
+                                          >
+                                            <span className="text-muted">📦</span>
+                                          </div>
+                                        )}
+                                      </td>
+                                      <td>
+                                        <strong>{producto.nombre}</strong>
+                                      </td>
+                                      <td className="text-center">
+                                        <span className={`badge bg-${stockStatus.variant} px-2 py-1`}>
+                                          {stockStatus.label}
+                                        </span>
+                                      </td>
+                                      <td className="text-center">
+                                        <div className="btn-group btn-group-sm">
+                                          <Button
+                                            variant="outline-primary"
+                                            size="sm"
+                                            onClick={() => editarProducto(producto)}
+                                            disabled={loading}
+                                            title="Editar producto"
+                                          >
+                                            ✏️
+                                          </Button>
+                                          <Button
+                                            variant="outline-danger"
+                                            size="sm"
+                                            onClick={() => eliminarProducto(producto.id)}
+                                            disabled={loading}
+                                            title="Eliminar producto"
+                                          >
+                                            🗑️
+                                          </Button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </Table>
+                          </div>
+                        </Accordion.Body>
+                      </Accordion.Item>
+                    );
+                  })}
+                </Accordion>
               )}
             </Card.Body>
           </Card>
@@ -281,18 +351,43 @@ function App() {
             <Row>
               <Col xs={12} md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Stock *</Form.Label>
-                  <Form.Control
-                    type="number"
-                    placeholder="0"
-                    min="0"
-                    value={nuevoProducto.stock}
-                    onChange={(e) => setNuevoProducto({...nuevoProducto, stock: e.target.value})}
+                  <Form.Label>Categoría *</Form.Label>
+                  <Form.Select
+                    value={nuevoProducto.categoria_id}
+                    onChange={(e) => setNuevoProducto({...nuevoProducto, categoria_id: e.target.value})}
                     required
-                  />
+                  >
+                    <option value="">Seleccionar categoría</option>
+                    <option value="1">Pelo</option>
+                    <option value="2">Jabón de tocador</option>
+                    <option value="3">DEOS y fragancias</option>
+                    <option value="4">Suavizantes</option>
+                    <option value="5">Limpiadores</option>
+                    <option value="6">Lavavajillas</option>
+                    <option value="7">Jabón para la ropa</option>
+                    <option value="8">Savoury</option>
+                    <option value="9">Mayonesas y aderezos</option>
+                  </Form.Select>
                 </Form.Group>
               </Col>
               <Col xs={12} md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Estado de Stock *</Form.Label>
+                  <Form.Select
+                    value={nuevoProducto.stock_status}
+                    onChange={(e) => setNuevoProducto({...nuevoProducto, stock_status: e.target.value})}
+                    required
+                  >
+                    <option value="sin_stock">Sin Stock</option>
+                    <option value="poco_stock">Poco Stock</option>
+                    <option value="stock_normal">Stock Normal</option>
+                    <option value="mucho_stock">Mucho Stock</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12}>
                 <Form.Group className="mb-3">
                   <Form.Label>Fecha de pedido *</Form.Label>
                   <Form.Control

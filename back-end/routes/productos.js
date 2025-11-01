@@ -11,7 +11,7 @@ if (supabaseUrl && supabaseKey && supabaseUrl !== 'tu_supabase_url_aqui') {
   supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-// Obtener todos los productos
+// Obtener todos los productos con categorías
 router.get('/', async (req, res) => {
   if (!supabase) {
     return res.json([]); // Retornar array vacío si no hay DB configurada
@@ -19,8 +19,16 @@ router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('productos')
-      .select('*')
-      .order('id', { ascending: true });
+      .select(`
+        *,
+        categorias (
+          id,
+          nombre,
+          orden
+        )
+      `)
+      .order('categorias.orden', { ascending: true })
+      .order('nombre', { ascending: true });
 
     if (error) throw error;
     res.json(data);
@@ -35,11 +43,18 @@ router.post('/', async (req, res) => {
     return res.status(500).json({ error: 'Base de datos no configurada' });
   }
   try {
-    const { nombre, stock, fecha_pedido, imagen_url } = req.body;
+    const { nombre, categoria_id, stock_status, fecha_pedido, imagen_url } = req.body;
     const { data, error } = await supabase
       .from('productos')
-      .insert([{ nombre, stock, fecha_pedido, imagen_url }])
-      .select();
+      .insert([{ nombre, categoria_id, stock_status, fecha_pedido, imagen_url }])
+      .select(`
+        *,
+        categorias (
+          id,
+          nombre,
+          orden
+        )
+      `);
 
     if (error) throw error;
     res.json(data[0]);
@@ -55,12 +70,19 @@ router.put('/:id', async (req, res) => {
   }
   try {
     const { id } = req.params;
-    const { nombre, stock, fecha_pedido, imagen_url } = req.body;
+    const { nombre, categoria_id, stock_status, fecha_pedido, imagen_url } = req.body;
     const { data, error } = await supabase
       .from('productos')
-      .update({ nombre, stock, fecha_pedido, imagen_url })
+      .update({ nombre, categoria_id, stock_status, fecha_pedido, imagen_url })
       .eq('id', id)
-      .select();
+      .select(`
+        *,
+        categorias (
+          id,
+          nombre,
+          orden
+        )
+      `);
 
     if (error) throw error;
     res.json(data[0]);
