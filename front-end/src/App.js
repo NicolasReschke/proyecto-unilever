@@ -265,8 +265,12 @@ function App() {
 
               {loading && (
                 <div className="text-center mb-3">
-                  <Spinner animation="border" variant="primary" />
-                  <span className="ms-2">Cargando...</span>
+                  <img
+                    src="/unilever-spinner.png"
+                    alt="Cargando..."
+                    className="unilever-spinner"
+                  />
+                  <div className="mt-2 text-muted">Cargando productos...</div>
                 </div>
               )}
 
