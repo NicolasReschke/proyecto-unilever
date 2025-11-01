@@ -95,6 +95,8 @@ function App() {
 
       const method = editando ? 'PUT' : 'POST';
 
+      console.log('Enviando datos:', nuevoProducto);
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -103,14 +105,20 @@ function App() {
         body: JSON.stringify(nuevoProducto),
       });
 
+      console.log('Respuesta del servidor:', response.status, response.statusText);
+
       if (response.ok) {
+        const data = await response.json();
+        console.log('Producto guardado:', data);
         cargarProductos();
-        setNuevoProducto({ nombre: '', stock: '', fecha_pedido: '', imagen_url: '' });
+        setNuevoProducto({ nombre: '', categoria_id: '', stock_status: 'stock_normal', fecha_pedido: '', imagen_url: '' });
         setEditando(null);
         setShowModal(false);
         mostrarAlerta(editando ? 'Producto actualizado' : 'Producto agregado', 'success');
       } else {
-        mostrarAlerta('Error al guardar producto', 'danger');
+        const errorText = await response.text();
+        console.error('Error del servidor:', errorText);
+        mostrarAlerta(`Error al guardar producto: ${errorText}`, 'danger');
       }
     } catch (error) {
       console.error('Error guardando producto:', error);
