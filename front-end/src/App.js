@@ -327,6 +327,21 @@ function App() {
                 </Alert>
               ) : (
                 <Accordion defaultActiveKey={categorias.map((_, index) => index.toString())} alwaysOpen>
+                  {/* Header de tabla - solo visible para admin */}
+                  {isAdmin && (
+                    <div className="table-responsive mb-3">
+                      <Table striped bordered hover size="sm">
+                        <thead className="table-dark">
+                          <tr>
+                            <th className="text-center"></th>
+                            <th>Producto</th>
+                            <th className="text-center">Stock</th>
+                            <th className="text-center">Acciones</th>
+                          </tr>
+                        </thead>
+                      </Table>
+                    </div>
+                  )}
                   {categorias.map((categoria, index) => {
                     const productosCategoria = productosPorCategoria(categoria);
                     if (productosCategoria.length === 0) return null;
@@ -341,6 +356,16 @@ function App() {
                         <Accordion.Body>
                           <div className="table-responsive">
                             <Table striped bordered hover size="sm">
+                              {/* Header de tabla solo para usuarios comunes */}
+                              {!isAdmin && (
+                                <thead className="table-dark">
+                                  <tr>
+                                    <th className="text-center"></th>
+                                    <th>Producto</th>
+                                    <th className="text-center">Stock</th>
+                                  </tr>
+                                </thead>
+                              )}
                               <tbody>
                                 {productosCategoria.map((producto) => {
                                   const getStockStatus = (status) => {
