@@ -4,7 +4,7 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey || supabaseUrl === 'https://llgaixjvkmdwbudmtksn.supabase.co') {
+if (!supabaseUrl || !supabaseKey || supabaseUrl === 'tu_supabase_url_aqui') {
   console.error('❌ Error: Variables de entorno de Supabase no configuradas');
   console.log('Por favor, actualiza el archivo .env con tus credenciales de Supabase');
   process.exit(1);
