@@ -231,21 +231,21 @@ function App() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Credenciales desde variables de entorno
-    const adminUser = process.env.REACT_APP_ADMIN_USER || 'admin';
-    const adminPass = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
+    // Credenciales desde variables de entorno (sin valores por defecto hardcodeados)
+    const adminUser = process.env.REACT_APP_ADMIN_USER;
+    const adminPass = process.env.REACT_APP_ADMIN_PASSWORD;
 
     console.log('Credenciales esperadas:', adminUser, adminPass);
     console.log('Credenciales ingresadas:', loginData.username, loginData.password);
 
-    if (loginData.username === adminUser && loginData.password === adminPass) {
+    if (adminUser && adminPass && loginData.username === adminUser && loginData.password === adminPass) {
       setIsAdmin(true);
       localStorage.setItem('isAdmin', 'true'); // Guardar en localStorage
       setShowLoginModal(false);
       setLoginData({ username: '', password: '' });
       mostrarAlerta('Sesión iniciada como administrador', 'success');
     } else {
-      mostrarAlerta('Credenciales incorrectas', 'danger');
+      mostrarAlerta('Credenciales incorrectas o no configuradas', 'danger');
     }
   };
 
