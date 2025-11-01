@@ -179,71 +179,75 @@ function App() {
                   <Table striped bordered hover>
                     <thead className="table-dark">
                       <tr>
-                        <th className="d-none d-sm-table-cell">Imagen</th>
-                        <th>Producto</th>
+                        <th className="text-center">Imagen</th>
+                        <th>Nombre</th>
                         <th className="text-center">Stock</th>
-                        <th className="d-none d-md-table-cell">Fecha Pedido</th>
                         <th className="text-center">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {productos.map((producto) => (
-                        <tr key={producto.id}>
-                          <td className="d-none d-sm-table-cell">
-                            {producto.imagen_url && (
-                              <img
-                                src={producto.imagen_url}
-                                alt={producto.nombre}
-                                style={{width: '50px', height: '50px', objectFit: 'cover'}}
-                                className="rounded"
-                              />
-                            )}
-                          </td>
-                          <td>
-                            <div>
-                              <strong>{producto.nombre}</strong>
-                              {producto.imagen_url && (
-                                <div className="d-sm-none mt-1">
-                                  <img
-                                    src={producto.imagen_url}
-                                    alt={producto.nombre}
-                                    style={{width: '40px', height: '40px', objectFit: 'cover'}}
-                                    className="rounded"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="text-center">
-                            <span className={`badge ${producto.stock > 10 ? 'bg-success' : producto.stock > 0 ? 'bg-warning' : 'bg-danger'}`}>
-                              {producto.stock}
-                            </span>
-                          </td>
-                          <td className="d-none d-md-table-cell">
-                            {new Date(producto.fecha_pedido).toLocaleDateString('es-ES')}
-                          </td>
-                          <td className="text-center">
-                            <div className="btn-group btn-group-sm">
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                onClick={() => editarProducto(producto)}
-                                disabled={loading}
-                              >
-                                ✏️
-                              </Button>
-                              <Button
-                                variant="outline-danger"
-                                size="sm"
-                                onClick={() => eliminarProducto(producto.id)}
-                                disabled={loading}
-                              >
-                                🗑️
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                      {productos.map((producto) => {
+                         const getStockStatus = (stock) => {
+                           if (stock === 0) return { label: 'Sin Stock', variant: 'danger' };
+                           if (stock <= 5) return { label: 'Poco Stock', variant: 'warning' };
+                           if (stock <= 20) return { label: 'Stock Normal', variant: 'info' };
+                           return { label: 'Mucho Stock', variant: 'success' };
+                         };
+
+                         const stockStatus = getStockStatus(producto.stock);
+
+                         return (
+                           <tr key={producto.id}>
+                             <td className="text-center">
+                               {producto.imagen_url ? (
+                                 <img
+                                   src={producto.imagen_url}
+                                   alt={producto.nombre}
+                                   style={{width: '60px', height: '60px', objectFit: 'cover'}}
+                                   className="rounded"
+                                 />
+                               ) : (
+                                 <div
+                                   className="bg-light d-flex align-items-center justify-content-center rounded"
+                                   style={{width: '60px', height: '60px'}}
+                                 >
+                                   <span className="text-muted">📦</span>
+                                 </div>
+                               )}
+                             </td>
+                             <td>
+                               <strong>{producto.nombre}</strong>
+                             </td>
+                             <td className="text-center">
+                               <span className={`badge bg-${stockStatus.variant} px-2 py-1`}>
+                                 {stockStatus.label} ({producto.stock})
+                               </span>
+                             </td>
+                             <td className="text-center">
+                               <div className="btn-group btn-group-sm">
+                                 <Button
+                                   variant="outline-primary"
+                                   size="sm"
+                                   onClick={() => editarProducto(producto)}
+                                   disabled={loading}
+                                   title="Editar producto"
+                                 >
+                                   ✏️
+                                 </Button>
+                                 <Button
+                                   variant="outline-danger"
+                                   size="sm"
+                                   onClick={() => eliminarProducto(producto.id)}
+                                   disabled={loading}
+                                   title="Eliminar producto"
+                                 >
+                                   🗑️
+                                 </Button>
+                               </div>
+                             </td>
+                           </tr>
+                         );
+                       })}
                     </tbody>
                   </Table>
                 </div>
