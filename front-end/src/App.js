@@ -220,7 +220,7 @@ function App() {
                              </td>
                              <td className="text-center">
                                <span className={`badge bg-${stockStatus.variant} px-2 py-1`}>
-                                 {stockStatus.label} ({producto.stock})
+                                 {stockStatus.label}
                                </span>
                              </td>
                              <td className="text-center">
