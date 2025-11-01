@@ -301,12 +301,12 @@ function App() {
                   <i className="bi bi-shield-check"></i> Admin
                 </span>
                 <Button variant="outline-danger" size="sm" onClick={handleLogout} title="Cerrar Sesión">
-                  <i className="↪"></i>
+                  🚪
                 </Button>
               </div>
             ) : (
               <Button variant="outline-primary" size="sm" onClick={() => setShowLoginModal(true)}>
-                <i className="bi bi-person-circle"></i> Admin Login
+                <i className="bi bi-person-circle"></i> Login
               </Button>
             )}
           </Nav>
@@ -357,14 +357,14 @@ function App() {
                   {isAdmin && (
                     <div className="table-responsive mb-3">
                       <Table striped bordered hover size="sm">
-                        <thead className="table-dark">
+                        {/* <thead className="table-dark">
                           <tr>
                             <th className="text-center"></th>
                             <th>Producto</th>
                             <th className="text-center">Stock</th>
                             <th className="text-center">Acciones</th>
                           </tr>
-                        </thead>
+                        </thead> */}
                       </Table>
                     </div>
                   )}
@@ -383,7 +383,7 @@ function App() {
                           <div className="table-responsive">
                             <Table striped bordered hover size="sm">
                               {/* Header de tabla solo para usuarios comunes */}
-                              {!isAdmin && (
+                              {/* {!isAdmin && (
                                 <thead className="table-dark">
                                   <tr>
                                     <th className="text-center"></th>
@@ -391,7 +391,7 @@ function App() {
                                     <th className="text-center">Stock</th>
                                   </tr>
                                 </thead>
-                              )}
+                              )} */}
                               <tbody>
                                 {productosCategoria.map((producto) => {
                                   const getStockStatus = (status) => {
