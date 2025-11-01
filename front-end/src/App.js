@@ -322,21 +322,6 @@ function App() {
                 </Alert>
               ) : (
                 <Accordion defaultActiveKey={categorias.map((_, index) => index.toString())} alwaysOpen>
-                  {/* Header de tabla - solo visible para admin */}
-                  {isAdmin && (
-                    <div className="table-responsive mb-3">
-                      <Table striped bordered hover size="sm">
-                        <thead className="table-dark">
-                          <tr>
-                            <th className="text-center"></th>
-                            <th>Producto</th>
-                            <th className="text-center">Stock</th>
-                            <th className="text-center">Acciones</th>
-                          </tr>
-                        </thead>
-                      </Table>
-                    </div>
-                  )}
                   {categorias.map((categoria, index) => {
                     const productosCategoria = productosPorCategoria(categoria);
                     if (productosCategoria.length === 0) return null;
@@ -351,16 +336,6 @@ function App() {
                         <Accordion.Body>
                            <div className="table-responsive">
                              <Table striped bordered hover size="sm">
-                               {/* Header de tabla solo para usuarios comunes */}
-                               {!isAdmin && (
-                                 <thead className="table-dark">
-                                   <tr>
-                                     <th className="text-center"></th>
-                                     <th>Producto</th>
-                                     <th className="text-center">Stock</th>
-                                   </tr>
-                                 </thead>
-                               )}
                               <tbody>
                                 {productosCategoria.map((producto) => {
                                   const getStockStatus = (status) => {
@@ -397,15 +372,22 @@ function App() {
                                       <td>
                                         <strong>{producto.nombre}</strong>
                                       </td>
-                                      <td
-                                        className="text-center stock-cell"
-                                        onClick={() => cambiarStockStatus(producto)}
-                                        style={{ cursor: isAdmin ? 'pointer' : 'default' }}
-                                        title={isAdmin ? 'Click para cambiar estado de stock' : ''}
-                                      >
-                                        <span className={`badge bg-${stockStatus.variant} px-2 py-1 stock-badge`}>
-                                          {stockStatus.label}
-                                        </span>
+                                      <td className="text-center stock-cell">
+                                        {isAdmin ? (
+                                          <Button
+                                            variant={stockStatus.variant}
+                                            size="sm"
+                                            className="stock-badge"
+                                            onClick={() => cambiarStockStatus(producto)}
+                                            title="Click para cambiar estado de stock"
+                                          >
+                                            {stockStatus.label}
+                                          </Button>
+                                        ) : (
+                                          <span className={`badge bg-${stockStatus.variant} px-2 py-1 stock-badge`}>
+                                            {stockStatus.label}
+                                          </span>
+                                        )}
                                       </td>
                                       {isAdmin && (
                                         <td className="text-center">
