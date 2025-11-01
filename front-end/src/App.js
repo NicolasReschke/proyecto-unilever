@@ -17,6 +17,7 @@ function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [categoriasAbiertas, setCategoriasAbiertas] = useState({});
   const [isAdmin, setIsAdmin] = useState(() => {
     // Recuperar estado de admin del localStorage
@@ -169,6 +170,7 @@ function App() {
     setShowModal(true);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const toggleCategoria = (categoriaNombre) => {
     setCategoriasAbiertas(prev => ({
       ...prev,
