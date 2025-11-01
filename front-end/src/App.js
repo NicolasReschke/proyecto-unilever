@@ -232,8 +232,11 @@ function App() {
   const handleLogin = (e) => {
     e.preventDefault();
     // Credenciales desde variables de entorno
-    const adminUser = process.env.REACT_APP_ADMIN_USER;
-    const adminPass = process.env.REACT_APP_ADMIN_PASSWORD;
+    const adminUser = process.env.REACT_APP_ADMIN_USER || 'admin';
+    const adminPass = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
+
+    console.log('Credenciales esperadas:', adminUser, adminPass);
+    console.log('Credenciales ingresadas:', loginData.username, loginData.password);
 
     if (loginData.username === adminUser && loginData.password === adminPass) {
       setIsAdmin(true);
