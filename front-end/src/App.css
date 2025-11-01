@@ -203,3 +203,9 @@ body, html {
   padding: 10px 8px !important;
   border-radius: 6px;
 }
+
+/* Efecto hover para celdas de stock clickeables */
+.stock-cell:hover {
+  background-color: rgba(0, 123, 255, 0.1) !important;
+  transition: background-color 0.2s ease;
+}
