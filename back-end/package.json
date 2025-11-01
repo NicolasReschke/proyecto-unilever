@@ -6,7 +6,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup-db": "node setup-db.js"
+    "setup-db": "node setup-db.js",
+    "insert-productos": "node insert-productos.js"
   },
   "keywords": [],
   "author": "",
