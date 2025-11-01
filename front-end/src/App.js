@@ -25,17 +25,31 @@ function App() {
     try {
       // Usar la URL del back-end desplegado cuando esté disponible
       const API_URL = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${API_URL}/api/productos`);
+      console.log('Intentando conectar a:', `${API_URL}/api/productos`);
+      const response = await fetch(`${API_URL}/api/productos`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Respuesta del servidor:', response.status, response.statusText);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('Datos recibidos:', data);
         setProductos(Array.isArray(data) ? data : []);
+        if (data.length > 0) {
+          mostrarAlerta(`Cargados ${data.length} productos`, 'success');
+        }
       } else {
-        console.error('Error en la respuesta:', response.status);
+        const errorText = await response.text();
+        console.error('Error del servidor:', errorText);
         setProductos([]);
         mostrarAlerta('Error al cargar productos', 'danger');
       }
     } catch (error) {
-      console.error('Error cargando productos:', error);
+      console.error('Error de conexión:', error);
       setProductos([]);
       mostrarAlerta('Error de conexión', 'danger');
     } finally {
