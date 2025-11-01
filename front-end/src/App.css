@@ -3,6 +3,12 @@ body {
   background-color: #f8f9fa;
 }
 
+/* Container principal con márgenes mínimos para mobile */
+.container-fluid {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
 .card {
   border: none;
   border-radius: 15px;

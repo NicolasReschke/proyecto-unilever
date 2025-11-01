@@ -193,7 +193,7 @@ function App() {
         <Container fluid>
           <Navbar.Brand href="#home" className="d-flex align-items-center">
             <img
-              src="/unilever-logo.svg"
+              src="/unilever-logo.png"
               alt="Unilever"
               height="40"
               className="me-2"
@@ -296,7 +296,7 @@ function App() {
                                   <th className="text-center">Imagen</th>
                                   <th>Nombre</th>
                                   <th className="text-center">Stock</th>
-                                  <th className="text-center">Acciones</th>
+                                  {isAdmin && <th className="text-center">Acciones</th>}
                                 </tr>
                               </thead>
                               <tbody>
@@ -340,8 +340,8 @@ function App() {
                                           {stockStatus.label}
                                         </span>
                                       </td>
-                                      <td className="text-center">
-                                        {isAdmin && (
+                                      {isAdmin && (
+                                        <td className="text-center">
                                           <div className="btn-group btn-group-sm">
                                             <Button
                                               variant="outline-primary"
@@ -362,8 +362,8 @@ function App() {
                                               🗑️
                                             </Button>
                                           </div>
-                                        )}
-                                      </td>
+                                        </td>
+                                      )}
                                     </tr>
                                   );
                                 })}
