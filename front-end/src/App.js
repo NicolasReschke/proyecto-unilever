@@ -165,7 +165,10 @@ function App() {
   };
 
   const productosPorCategoria = (categoriaNombre) => {
-    return productos.filter(producto => producto.categorias?.nombre === categoriaNombre);
+    return productos.filter(producto =>
+      producto.categorias?.nombre === categoriaNombre &&
+      (producto.stock_status === 'sin_stock' || producto.stock_status === 'poco_stock')
+    );
   };
 
   const handleLogin = (e) => {
@@ -189,7 +192,7 @@ function App() {
   return (
     <>
       {/* Navbar con logo y login */}
-      <Navbar bg="light" expand="lg" className="mb-4 shadow-sm">
+      <Navbar bg="light" expand="lg" className="mb-4 shadow-sm" style={{marginBottom: '5px'}}>
         <Container fluid>
           <Navbar.Brand href="#home" className="d-flex align-items-center">
             <img
@@ -264,28 +267,6 @@ function App() {
                         <Accordion.Header>
                           <div className="d-flex justify-content-between align-items-center w-100 me-3">
                             <span><strong>{categoria}</strong> ({productosCategoria.length} productos)</span>
-                            <div className="d-flex gap-2">
-                              {productosCategoria.map(producto => {
-                                const getStockColor = (status) => {
-                                  switch (status) {
-                                    case 'sin_stock': return 'danger';
-                                    case 'poco_stock': return 'warning';
-                                    case 'stock_normal': return 'success';
-                                    case 'mucho_stock': return 'info';
-                                    default: return 'secondary';
-                                  }
-                                };
-                                return (
-                                  <span
-                                    key={producto.id}
-                                    className={`badge bg-${getStockColor(producto.stock_status)}`}
-                                    style={{fontSize: '0.7em'}}
-                                  >
-                                    ●
-                                  </span>
-                                );
-                              })}
-                            </div>
                           </div>
                         </Accordion.Header>
                         <Accordion.Body>

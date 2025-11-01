@@ -9,6 +9,16 @@ body {
   padding-right: 2px;
 }
 
+/* Reducir padding del card-body */
+.card-body {
+  padding: 10px !important;
+}
+
+/* Separación mínima entre navbar y container */
+.mb-4 {
+  margin-bottom: 5px !important;
+}
+
 .card {
   border: none;
   border-radius: 15px;
