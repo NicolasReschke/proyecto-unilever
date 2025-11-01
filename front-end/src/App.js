@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion, Navbar, Nav } from 'react-bootstrap';
+import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 
 function App() {
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [activeKeys, setActiveKeys] = useState([]);
   const [nuevoProducto, setNuevoProducto] = useState({
     nombre: '',
     categoria_id: '',
@@ -30,6 +32,26 @@ function App() {
   useEffect(() => {
     cargarProductos();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cargar estado guardado o abrir todo por defecto
+  useEffect(() => {
+    if (categorias.length === 0) return;
+
+    const saved = localStorage.getItem("accordionState");
+    if (saved) {
+      setActiveKeys(JSON.parse(saved));
+    } else {
+      // abrir todas las categorías por defecto
+      setActiveKeys(categorias.map((_, i) => i.toString()));
+    }
+  }, [categorias]);
+
+  // Guardar estado actual cada vez que cambia
+  useEffect(() => {
+    if (activeKeys.length > 0) {
+      localStorage.setItem("accordionState", JSON.stringify(activeKeys));
+    }
+  }, [activeKeys]);
 
   const cargarProductos = async () => {
     setLoading(true);
@@ -170,12 +192,13 @@ function App() {
     setShowModal(true);
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const toggleCategoria = (categoriaNombre) => {
-    setCategoriasAbiertas(prev => ({
-      ...prev,
-      [categoriaNombre]: !prev[categoriaNombre]
-    }));
+  // Manejador de click para abrir/cerrar
+  const handleToggle = (key) => {
+    setActiveKeys((prev) =>
+      prev.includes(key)
+        ? prev.filter((k) => k !== key)
+        : [...prev, key]
+    );
   };
 
   const productosPorCategoria = (categoriaNombre) => {
@@ -329,7 +352,7 @@ function App() {
                   <p>Haz clic en "Agregar Producto" para comenzar.</p>
                 </Alert>
               ) : (
-                <Accordion defaultActiveKey={categorias.map((_, index) => index.toString())} alwaysOpen>
+                <Accordion activeKey={activeKeys} alwaysOpen>
                   {/* Header de tabla - solo visible para admin */}
                   {isAdmin && (
                     <div className="table-responsive mb-3">
@@ -351,7 +374,7 @@ function App() {
 
                     return (
                       <Accordion.Item key={categoria} eventKey={index.toString()}>
-                        <Accordion.Header>
+                        <Accordion.Header onClick={() => handleToggle(index.toString())}>
                           <div className="d-flex justify-content-between align-items-center w-100 me-3">
                             <span><strong>{categoria}</strong> ({productosCategoria.length} productos)</span>
                           </div>
