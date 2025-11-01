@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion, Navbar, Nav } from 'react-bootstrap';
 import './App.css';
 
 function App() {
@@ -14,9 +14,12 @@ function App() {
   });
   const [editando, setEditando] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [categoriasAbiertas, setCategoriasAbiertas] = useState({});
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loginData, setLoginData] = useState({ username: '', password: '' });
 
   // Cargar productos al iniciar
   useEffect(() => {
@@ -165,29 +168,78 @@ function App() {
     return productos.filter(producto => producto.categorias?.nombre === categoriaNombre);
   };
 
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Credenciales simples para demo (en producción usar JWT o similar)
+    if (loginData.username === 'admin' && loginData.password === 'admin123') {
+      setIsAdmin(true);
+      setShowLoginModal(false);
+      setLoginData({ username: '', password: '' });
+      mostrarAlerta('Sesión iniciada como administrador', 'success');
+    } else {
+      mostrarAlerta('Credenciales incorrectas', 'danger');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAdmin(false);
+    mostrarAlerta('Sesión cerrada', 'info');
+  };
+
   return (
-    <Container fluid className="py-4">
-      <Row className="justify-content-center">
-        <Col xs={12} md={10} lg={8}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-primary text-white">
-              <h1 className="h4 mb-0">📦 Gestión de Productos</h1>
-            </Card.Header>
-            <Card.Body>
+    <>
+      {/* Navbar con logo y login */}
+      <Navbar bg="light" expand="lg" className="mb-4 shadow-sm">
+        <Container fluid>
+          <Navbar.Brand href="#home" className="d-flex align-items-center">
+            <img
+              src="/unilever-logo.svg"
+              alt="Unilever"
+              height="40"
+              className="me-2"
+            />
+            <span className="fw-bold text-primary">Gestión de Infaltables</span>
+          </Navbar.Brand>
+          <Nav className="ms-auto">
+            {isAdmin ? (
+              <div className="d-flex align-items-center">
+                <span className="text-success me-3">
+                  <i className="bi bi-shield-check"></i> Admin
+                </span>
+                <Button variant="outline-danger" size="sm" onClick={handleLogout}>
+                  <i className="bi bi-box-arrow-right"></i> Cerrar Sesión
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline-primary" size="sm" onClick={() => setShowLoginModal(true)}>
+                <i className="bi bi-person-circle"></i> Admin Login
+              </Button>
+            )}
+          </Nav>
+        </Container>
+      </Navbar>
+
+      <Container fluid className="py-4">
+        <Row className="justify-content-center">
+          <Col xs={12} md={10} lg={8}>
+            <Card className="shadow-sm">
+              <Card.Body>
               {alert && (
                 <Alert variant={alert.tipo} dismissible onClose={() => setAlert(null)}>
                   {alert.mensaje}
                 </Alert>
               )}
 
-              <div className="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
-                <Button variant="primary" onClick={abrirModalAgregar} disabled={loading}>
-                  ➕ Agregar Producto
-                </Button>
-                <Button variant="outline-secondary" onClick={cargarProductos} disabled={loading}>
-                  🔄 Actualizar
-                </Button>
-              </div>
+              {isAdmin && (
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+                  <Button variant="primary" onClick={abrirModalAgregar} disabled={loading}>
+                    ➕ Agregar Producto
+                  </Button>
+                  <Button variant="outline-secondary" onClick={cargarProductos} disabled={loading}>
+                    🔄 Actualizar
+                  </Button>
+                </div>
+              )}
 
               {loading && (
                 <div className="text-center mb-3">
@@ -218,8 +270,8 @@ function App() {
                                   switch (status) {
                                     case 'sin_stock': return 'danger';
                                     case 'poco_stock': return 'warning';
-                                    case 'stock_normal': return 'info';
-                                    case 'mucho_stock': return 'success';
+                                    case 'stock_normal': return 'success';
+                                    case 'mucho_stock': return 'info';
                                     default: return 'secondary';
                                   }
                                 };
@@ -253,8 +305,8 @@ function App() {
                                     switch (status) {
                                       case 'sin_stock': return { label: 'Sin Stock', variant: 'danger' };
                                       case 'poco_stock': return { label: 'Poco Stock', variant: 'warning' };
-                                      case 'stock_normal': return { label: 'Stock Normal', variant: 'info' };
-                                      case 'mucho_stock': return { label: 'Mucho Stock', variant: 'success' };
+                                      case 'stock_normal': return { label: 'Stock Normal', variant: 'success' };
+                                      case 'mucho_stock': return { label: 'Mucho Stock', variant: 'info' };
                                       default: return { label: 'Desconocido', variant: 'secondary' };
                                     }
                                   };
@@ -289,26 +341,28 @@ function App() {
                                         </span>
                                       </td>
                                       <td className="text-center">
-                                        <div className="btn-group btn-group-sm">
-                                          <Button
-                                            variant="outline-primary"
-                                            size="sm"
-                                            onClick={() => editarProducto(producto)}
-                                            disabled={loading}
-                                            title="Editar producto"
-                                          >
-                                            ✏️
-                                          </Button>
-                                          <Button
-                                            variant="outline-danger"
-                                            size="sm"
-                                            onClick={() => eliminarProducto(producto.id)}
-                                            disabled={loading}
-                                            title="Eliminar producto"
-                                          >
-                                            🗑️
-                                          </Button>
-                                        </div>
+                                        {isAdmin && (
+                                          <div className="btn-group btn-group-sm">
+                                            <Button
+                                              variant="outline-primary"
+                                              size="sm"
+                                              onClick={() => editarProducto(producto)}
+                                              disabled={loading}
+                                              title="Editar producto"
+                                            >
+                                              ✏️
+                                            </Button>
+                                            <Button
+                                              variant="outline-danger"
+                                              size="sm"
+                                              onClick={() => eliminarProducto(producto.id)}
+                                              disabled={loading}
+                                              title="Eliminar producto"
+                                            >
+                                              🗑️
+                                            </Button>
+                                          </div>
+                                        )}
                                       </td>
                                     </tr>
                                   );
@@ -322,10 +376,11 @@ function App() {
                   })}
                 </Accordion>
               )}
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
 
       {/* Modal para agregar/editar producto */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
@@ -427,7 +482,51 @@ function App() {
           </Modal.Footer>
         </Form>
       </Modal>
-    </Container>
+
+      {/* Modal de Login */}
+      <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)} centered>
+        <Modal.Header closeButton className="bg-primary text-white">
+          <Modal.Title>🔐 Acceso de Administrador</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleLogin}>
+          <Modal.Body>
+            <Form.Group className="mb-3">
+              <Form.Label>Usuario</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="admin"
+                value={loginData.username}
+                onChange={(e) => setLoginData({...loginData, username: e.target.value})}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="••••••••"
+                value={loginData.password}
+                onChange={(e) => setLoginData({...loginData, password: e.target.value})}
+                required
+              />
+            </Form.Group>
+            <div className="text-muted small">
+              <strong>Credenciales de demo:</strong><br/>
+              Usuario: admin<br/>
+              Contraseña: admin123
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowLoginModal(false)}>
+              Cancelar
+            </Button>
+            <Button variant="primary" type="submit">
+              Iniciar Sesión
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    </>
   );
 }
 
