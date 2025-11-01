@@ -24,7 +24,7 @@ function App() {
     setLoading(true);
     try {
       // Usar la URL del back-end desplegado cuando esté disponible
-      const API_URL = process.env.REACT_APP_API_URL;
+      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
       console.log('Intentando conectar a:', `${API_URL}/api/productos`);
       const response = await fetch(`${API_URL}/api/productos`, {
         method: 'GET',
@@ -66,7 +66,7 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL;
+      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
       const url = editando
         ? `${API_URL}/api/productos/${editando}`
         : `${API_URL}/api/productos`;
@@ -114,7 +114,7 @@ function App() {
 
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL;
+      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
       const response = await fetch(`${API_URL}/api/productos/${id}`, {
         method: 'DELETE',
       });
