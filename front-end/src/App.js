@@ -18,7 +18,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
   const [categoriasAbiertas, setCategoriasAbiertas] = useState({});
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => {
+    // Recuperar estado de admin del localStorage
+    const savedAdmin = localStorage.getItem('isAdmin');
+    return savedAdmin === 'true';
+  });
   const [loginData, setLoginData] = useState({ username: '', password: '' });
 
   // Cargar productos al iniciar
@@ -176,6 +180,7 @@ function App() {
     // Credenciales simples para demo (en producción usar JWT o similar)
     if (loginData.username === 'admin' && loginData.password === 'admin123') {
       setIsAdmin(true);
+      localStorage.setItem('isAdmin', 'true'); // Guardar en localStorage
       setShowLoginModal(false);
       setLoginData({ username: '', password: '' });
       mostrarAlerta('Sesión iniciada como administrador', 'success');
@@ -186,6 +191,7 @@ function App() {
 
   const handleLogout = () => {
     setIsAdmin(false);
+    localStorage.removeItem('isAdmin'); // Remover de localStorage
     mostrarAlerta('Sesión cerrada', 'info');
   };
 
