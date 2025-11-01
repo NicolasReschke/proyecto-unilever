@@ -297,8 +297,8 @@ function App() {
                             <Table striped bordered hover size="sm">
                               <thead className="table-dark">
                                 <tr>
-                                  <th className="text-center">Imagen</th>
-                                  <th>Nombre</th>
+                                  <th className="text-center"></th>
+                                  <th>Producto</th>
                                   <th className="text-center">Stock</th>
                                   {isAdmin && <th className="text-center">Acciones</th>}
                                 </tr>
@@ -339,8 +339,8 @@ function App() {
                                       <td>
                                         <strong>{producto.nombre}</strong>
                                       </td>
-                                      <td className="text-center">
-                                        <span className={`badge bg-${stockStatus.variant} px-2 py-1`}>
+                                      <td className="text-center stock-cell">
+                                        <span className={`badge bg-${stockStatus.variant} px-2 py-1 stock-badge`}>
                                           {stockStatus.label}
                                         </span>
                                       </td>
