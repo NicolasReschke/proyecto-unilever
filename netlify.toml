@@ -1,4 +1,5 @@
 [build]
+  base = "front-end"
   publish = "build"
   command = "npm run build"
 
@@ -11,6 +12,7 @@
   status = 200
 
 [dev]
+  base = "front-end"
   command = "npm start"
   port = 3000
   publish = "public"
