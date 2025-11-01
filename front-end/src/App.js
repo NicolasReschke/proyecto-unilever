@@ -24,7 +24,7 @@ function App() {
     setLoading(true);
     try {
       // Usar la URL del back-end desplegado cuando esté disponible
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const API_URL = process.env.REACT_APP_API_URL;
       const response = await fetch(`${API_URL}/api/productos`);
       if (response.ok) {
         const data = await response.json();
@@ -52,7 +52,7 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const API_URL = process.env.REACT_APP_API_URL;
       const url = editando
         ? `${API_URL}/api/productos/${editando}`
         : `${API_URL}/api/productos`;
@@ -100,7 +100,7 @@ function App() {
 
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const API_URL = process.env.REACT_APP_API_URL;
       const response = await fetch(`${API_URL}/api/productos/${id}`, {
         method: 'DELETE',
       });
