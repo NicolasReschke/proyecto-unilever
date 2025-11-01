@@ -334,8 +334,8 @@ function App() {
                           </div>
                         </Accordion.Header>
                         <Accordion.Body>
-                           <div className="table-responsive">
-                             <Table striped bordered hover size="sm">
+                          <div className="table-responsive">
+                            <Table striped bordered hover size="sm">
                               <tbody>
                                 {productosCategoria.map((producto) => {
                                   const getStockStatus = (status) => {
@@ -559,11 +559,6 @@ function App() {
                 required
               />
             </Form.Group>
-            <div className="text-muted small">
-              <strong>Credenciales de demo:</strong><br/>
-              Usuario: admin<br/>
-              Contraseña: admin123
-            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={() => setShowLoginModal(false)}>
