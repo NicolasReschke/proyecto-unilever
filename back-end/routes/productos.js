@@ -7,7 +7,7 @@ const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
 // Solo crear cliente si las variables están definidas
 let supabase = null;
-if (supabaseUrl && supabaseKey && supabaseUrl !== 'tu_supabase_url_aqui') {
+if (supabaseUrl && supabaseKey && supabaseUrl !== 'https://llgaixjvkmdwbudmtksn.supabase.co') {
   supabase = createClient(supabaseUrl, supabaseKey);
 }
 
