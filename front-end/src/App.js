@@ -266,11 +266,11 @@ function App() {
               {loading && (
                 <div className="text-center mb-3">
                   <img
-                    src="/unilever-spinner.png"
+                    src="/unilever-spinner-new.png"
                     alt="Cargando..."
                     className="unilever-spinner"
                   />
-                  <div className="mt-2 text-muted">Cargando productos...</div>
+                  <div className="mt-2 text-muted">Cargando...</div>
                 </div>
               )}
 
