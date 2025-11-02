@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion, Navbar, Nav } from 'react-bootstrap';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 
@@ -290,30 +288,6 @@ function App() {
     mostrarAlerta('Sesión cerrada', 'info');
   };
 
-  // Componente para elementos arrastrables
-  const SortableItem = ({ id, children }) => {
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-    } = useSortable({ id });
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
-
-    return (
-      <tr ref={setNodeRef} style={style} {...attributes} {...listeners}>
-        <td className="text-center drag-handle" style={{cursor: 'grab', width: '30px'}}>
-          {isAdmin && '⋮⋮'}
-        </td>
-        {children}
-      </tr>
-    );
-  };
 
   // Función para manejar el fin del arrastre
   const handleDragEnd = async (event) => {
@@ -475,9 +449,19 @@ function App() {
                               {!isAdmin && (
                                 <thead className="table-dark">
                                   <tr>
-                                    <th className="text-center"></th>
+                                    <th className="text-center">Imagen</th>
                                     <th>Producto</th>
                                     <th className="text-center">Stock</th>
+                                  </tr>
+                                </thead>
+                              )}
+                              {isAdmin && (
+                                <thead className="table-dark">
+                                  <tr>
+                                    <th className="text-center">Imagen</th>
+                                    <th>Producto</th>
+                                    <th className="text-center">Stock</th>
+                                    <th className="text-center">Acciones</th>
                                   </tr>
                                 </thead>
                               )}
@@ -489,7 +473,7 @@ function App() {
                                       case 'sin_stock': return { label: 'Sin Stock', variant: 'danger' };
                                       case 'poco_stock': return { label: 'Poco Stock', variant: 'warning' };
                                       case 'stock_normal': return { label: 'Stock Normal', variant: 'success' };
-                                      case 'mucho_stock': return { label: 'Mucho Stock', variant: 'info' };
+                                      case 'mucho_stock': return { label: 'Hay en Depósito', variant: 'info' };
                                       default: return { label: 'Desconocido', variant: 'secondary' };
                                     }
                                   };
@@ -497,7 +481,7 @@ function App() {
                                   const stockStatus = getStockStatus(producto.stock_status);
 
                                   return (
-                                    <SortableItem key={producto.id} id={producto.id}>
+                                    <tr key={producto.id}>
                                       <td className="text-center">
                                         {producto.imagen_url ? (
                                           <img
@@ -559,7 +543,7 @@ function App() {
                                           </div>
                                         </td>
                                       )}
-                                    </SortableItem>
+                                    </tr>
                                   );
                                 })}
                                 </tbody>
@@ -633,7 +617,7 @@ function App() {
                     <option value="sin_stock">Sin Stock</option>
                     <option value="poco_stock">Poco Stock</option>
                     <option value="stock_normal">Stock Normal</option>
-                    <option value="mucho_stock">Mucho Stock</option>
+                    <option value="mucho_stock">Hay en Depósito</option>
                   </Form.Select>
                 </Form.Group>
               </Col>

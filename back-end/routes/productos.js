@@ -27,7 +27,6 @@ router.get('/', async (req, res) => {
           orden
         )
       `)
-      .order('orden', { ascending: true })
       .order('id', { ascending: true });
 
     if (error) throw error;
