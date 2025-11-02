@@ -27,8 +27,8 @@ router.get('/', async (req, res) => {
           orden
         )
       `)
-      .order('categorias(orden)', { ascending: true })
-      .order('nombre', { ascending: true });
+      .order('orden', { ascending: true })
+      .order('id', { ascending: true });
 
     if (error) throw error;
     res.json(data);
@@ -105,6 +105,27 @@ router.delete('/:id', async (req, res) => {
 
     if (error) throw error;
     res.json({ message: 'Producto eliminado' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Actualizar orden de productos (para drag & drop)
+router.put('/orden/:id', async (req, res) => {
+  if (!supabase) {
+    return res.status(500).json({ error: 'Base de datos no configurada' });
+  }
+  try {
+    const { id } = req.params;
+    const { orden } = req.body;
+    const { data, error } = await supabase
+      .from('productos')
+      .update({ orden })
+      .eq('id', id)
+      .select();
+
+    if (error) throw error;
+    res.json(data[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

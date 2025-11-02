@@ -17,6 +17,7 @@ CREATE TABLE productos (
   stock_status VARCHAR(20) NOT NULL CHECK (stock_status IN ('sin_stock', 'poco_stock', 'stock_normal', 'mucho_stock')),
   fecha_pedido DATE NOT NULL,
   imagen_url TEXT,
+  orden INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

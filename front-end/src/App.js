@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion, Navbar, Nav } from 'react-bootstrap';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 
@@ -27,6 +31,14 @@ function App() {
     return savedAdmin === 'true';
   });
   const [loginData, setLoginData] = useState({ username: '', password: '' });
+
+  // Configurar sensores para drag & drop
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Cargar productos al iniciar
   useEffect(() => {
@@ -278,6 +290,78 @@ function App() {
     mostrarAlerta('Sesión cerrada', 'info');
   };
 
+  // Componente para elementos arrastrables
+  const SortableItem = ({ id, children }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+    } = useSortable({ id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    return (
+      <tr ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        <td className="text-center drag-handle" style={{cursor: 'grab', width: '30px'}}>
+          {isAdmin && '⋮⋮'}
+        </td>
+        {children}
+      </SortableItem>
+    );
+  };
+
+  // Función para manejar el fin del arrastre
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+
+    // Encontrar los productos en la misma categoría
+    const categoriaActiva = productos.find(p => p.id === activeId)?.categorias?.nombre;
+    const productosCategoria = productos.filter(p => p.categorias?.nombre === categoriaActiva);
+
+    const oldIndex = productosCategoria.findIndex(p => p.id === activeId);
+    const newIndex = productosCategoria.findIndex(p => p.id === overId);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // Reordenar el array
+    const reorderedProductos = arrayMove(productosCategoria, oldIndex, newIndex);
+
+    // Actualizar órdenes en la base de datos
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
+
+      // Actualizar órdenes de todos los productos en la categoría
+      const updatePromises = reorderedProductos.map((producto, index) => {
+        return fetch(`${API_URL}/api/productos/orden/${producto.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orden: index }),
+        });
+      });
+
+      await Promise.all(updatePromises);
+
+      // Recargar productos para reflejar cambios
+      cargarProductos();
+      mostrarAlerta('Orden actualizado', 'success');
+    } catch (error) {
+      console.error('Error actualizando orden:', error);
+      mostrarAlerta('Error al actualizar orden', 'danger');
+    }
+  };
+
   return (
     <>
       {/* Navbar con logo y login */}
@@ -352,7 +436,12 @@ function App() {
                   <p>Haz clic en "Agregar Producto" para comenzar.</p>
                 </Alert>
               ) : (
-                <Accordion activeKey={activeKeys} alwaysOpen>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <Accordion activeKey={activeKeys} alwaysOpen>
                   {/* Header de tabla - solo visible para admin */}
                   {isAdmin && (
                     <div className="table-responsive mb-3">
@@ -383,7 +472,7 @@ function App() {
                           <div className="table-responsive">
                             <Table striped bordered hover size="sm">
                               {/* Header de tabla solo para usuarios comunes */}
-                              {/* {!isAdmin && (
+                              {!isAdmin && (
                                 <thead className="table-dark">
                                   <tr>
                                     <th className="text-center"></th>
@@ -391,8 +480,9 @@ function App() {
                                     <th className="text-center">Stock</th>
                                   </tr>
                                 </thead>
-                              )} */}
-                              <tbody>
+                              )}
+                              <SortableContext items={productosCategoria.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                                <tbody>
                                 {productosCategoria.map((producto) => {
                                   const getStockStatus = (status) => {
                                     switch (status) {
@@ -407,7 +497,7 @@ function App() {
                                   const stockStatus = getStockStatus(producto.stock_status);
 
                                   return (
-                                    <tr key={producto.id}>
+                                    <SortableItem key={producto.id} id={producto.id}>
                                       <td className="text-center">
                                         {producto.imagen_url ? (
                                           <img
@@ -472,14 +562,16 @@ function App() {
                                     </tr>
                                   );
                                 })}
-                              </tbody>
+                                </tbody>
+                              </SortableContext>
                             </Table>
                           </div>
                         </Accordion.Body>
                       </Accordion.Item>
                     );
                   })}
-                </Accordion>
+                  </Accordion>
+                </DndContext>
               )}
               </Card.Body>
             </Card>
