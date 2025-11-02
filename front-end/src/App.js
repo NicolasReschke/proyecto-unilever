@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion, Navbar, Nav } from 'react-bootstrap';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -68,8 +68,8 @@ function App() {
   const cargarProductos = async () => {
     setLoading(true);
     try {
-      // Usar la URL del back-end desplegado cuando esté disponible
-      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
+      // Usar localhost para desarrollo local
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
       console.log('Intentando conectar a:', `${API_URL}/api/productos`);
       const response = await fetch(`${API_URL}/api/productos`, {
         method: 'GET',
@@ -311,7 +311,7 @@ function App() {
           {isAdmin && '⋮⋮'}
         </td>
         {children}
-      </SortableItem>
+      </tr>
     );
   };
 
@@ -559,7 +559,7 @@ function App() {
                                           </div>
                                         </td>
                                       )}
-                                    </tr>
+                                    </SortableItem>
                                   );
                                 })}
                                 </tbody>
