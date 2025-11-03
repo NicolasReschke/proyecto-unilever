@@ -54,11 +54,21 @@ function App() {
     }
   }, [activeKeys]);
 
+  // Función para determinar si estamos en producción o desarrollo
+  const getApiUrl = () => {
+    // Si estamos en Netlify (producción)
+    if (window.location.hostname.includes('netlify.app')) {
+      return 'https://proyecto-unilever-backend.onrender.com';
+    }
+    // Si estamos localmente
+    return 'http://localhost:5000';
+  };
+
   const cargarProductos = async () => {
     setLoading(true);
     try {
-      // Usar localhost para desarrollo local
-      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const API_URL = getApiUrl();
+      console.log('Modo:', window.location.hostname.includes('netlify.app') ? 'PRODUCCIÓN' : 'DESARROLLO');
       console.log('Intentando conectar a:', `${API_URL}/api/productos`);
       const response = await fetch(`${API_URL}/api/productos`, {
         method: 'GET',
@@ -112,13 +122,14 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
+      const API_URL = getApiUrl();
       const url = editando
         ? `${API_URL}/api/productos/${editando}`
         : `${API_URL}/api/productos`;
 
       const method = editando ? 'PUT' : 'POST';
 
+      console.log('Modo:', window.location.hostname.includes('netlify.app') ? 'PRODUCCIÓN' : 'DESARROLLO');
       console.log('Enviando datos:', nuevoProducto);
 
       const response = await fetch(url, {
@@ -169,7 +180,7 @@ function App() {
 
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
+      const API_URL = getApiUrl();
       const response = await fetch(`${API_URL}/api/productos/${id}`, {
         method: 'DELETE',
       });
@@ -224,7 +235,7 @@ function App() {
 
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
+      const API_URL = getApiUrl();
       const response = await fetch(`${API_URL}/api/productos/${producto.id}`, {
         method: 'PUT',
         headers: {
