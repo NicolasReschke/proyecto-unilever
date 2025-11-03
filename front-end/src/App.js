@@ -441,26 +441,14 @@ function App() {
                         <Accordion.Body>
                           <div className="table-responsive">
                             <Table striped bordered hover size="sm">
-                              {/* Header de tabla solo para usuarios comunes */}
-                              {!isAdmin && (
-                                <thead className="table-dark">
-                                  <tr>
-                                    <th className="text-center">Imagen</th>
-                                    <th>Producto</th>
-                                    <th className="text-center">Stock</th>
-                                  </tr>
-                                </thead>
-                              )}
-                              {isAdmin && (
-                                <thead className="table-dark">
-                                  <tr>
-                                    <th className="text-center">Imagen</th>
-                                    <th>Producto</th>
-                                    <th className="text-center">Stock</th>
-                                    <th className="text-center">Acciones</th>
-                                  </tr>
-                                </thead>
-                              )}
+                              <thead className="table-dark">
+                                <tr>
+                                  <th className="text-center">Imagen</th>
+                                  <th>Producto</th>
+                                  <th className="text-center">Stock</th>
+                                  {isAdmin && <th className="text-center">Acciones</th>}
+                                </tr>
+                              </thead>
                               <SortableContext items={productosCategoria.map(p => p.id)} strategy={verticalListSortingStrategy}>
                                 <tbody>
                                 {productosCategoria.map((producto) => {
@@ -517,7 +505,7 @@ function App() {
                                       </td>
                                       {isAdmin && (
                                         <td className="text-center">
-                                          <div className="btn-group btn-group-sm">
+                                          <div className="d-flex align-items-center justify-content-center gap-1">
                                             <Button
                                               variant="outline-primary"
                                               size="sm"
@@ -536,6 +524,13 @@ function App() {
                                             >
                                               🗑️
                                             </Button>
+                                            <span
+                                              className="text-muted"
+                                              style={{cursor: 'grab', fontSize: '12px'}}
+                                              title="Arrastrar para reordenar"
+                                            >
+                                              ⋮⋮
+                                            </span>
                                           </div>
                                         </td>
                                       )}
