@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion, Navbar, Nav } from 'react-bootstrap';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 
@@ -30,13 +28,6 @@ function App() {
   });
   const [loginData, setLoginData] = useState({ username: '', password: '' });
 
-  // Configurar sensores para drag & drop
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
   // Cargar productos al iniciar
   useEffect(() => {
@@ -289,52 +280,6 @@ function App() {
   };
 
 
-  // Función para manejar el fin del arrastre
-  const handleDragEnd = async (event) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) return;
-
-    const activeId = active.id;
-    const overId = over.id;
-
-    // Encontrar los productos en la misma categoría
-    const categoriaActiva = productos.find(p => p.id === activeId)?.categorias?.nombre;
-    const productosCategoria = productos.filter(p => p.categorias?.nombre === categoriaActiva);
-
-    const oldIndex = productosCategoria.findIndex(p => p.id === activeId);
-    const newIndex = productosCategoria.findIndex(p => p.id === overId);
-
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    // Reordenar el array
-    const reorderedProductos = arrayMove(productosCategoria, oldIndex, newIndex);
-
-    // Actualizar órdenes en la base de datos
-    try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://proyecto-unilever-backend.onrender.com';
-
-      // Actualizar órdenes de todos los productos en la categoría
-      const updatePromises = reorderedProductos.map((producto, index) => {
-        return fetch(`${API_URL}/api/productos/orden/${producto.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ orden: index }),
-        });
-      });
-
-      await Promise.all(updatePromises);
-
-      // Recargar productos para reflejar cambios
-      cargarProductos();
-      mostrarAlerta('Orden actualizado', 'success');
-    } catch (error) {
-      console.error('Error actualizando orden:', error);
-      mostrarAlerta('Error al actualizar orden', 'danger');
-    }
-  };
 
   return (
     <>
@@ -449,7 +394,6 @@ function App() {
                                   {isAdmin && <th className="text-center">Acciones</th>}
                                 </tr>
                               </thead>
-                              <SortableContext items={productosCategoria.map(p => p.id)} strategy={verticalListSortingStrategy}>
                                 <tbody>
                                 {productosCategoria.map((producto) => {
                                   const getStockStatus = (status) => {
@@ -538,7 +482,6 @@ function App() {
                                   );
                                 })}
                                 </tbody>
-                              </SortableContext>
                             </Table>
                           </div>
                         </Accordion.Body>
