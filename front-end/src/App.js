@@ -410,12 +410,8 @@ function App() {
                   <p>Haz clic en "Agregar Producto" para comenzar.</p>
                 </Alert>
               ) : (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <Accordion activeKey={activeKeys} alwaysOpen>
+                <Accordion activeKey={activeKeys} alwaysOpen>
+              )}
                   {/* Header de tabla - solo visible para admin */}
                   {isAdmin && (
                     <div className="table-responsive mb-3">
@@ -555,7 +551,6 @@ function App() {
                     );
                   })}
                   </Accordion>
-                </DndContext>
               )}
               </Card.Body>
             </Card>
