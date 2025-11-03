@@ -356,7 +356,6 @@ function App() {
                 </Alert>
               ) : (
                 <Accordion activeKey={activeKeys} alwaysOpen>
-              )}
                   {/* Header de tabla - solo visible para admin */}
                   {isAdmin && (
                     <div className="table-responsive mb-3">
