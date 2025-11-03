@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, Table, Modal, Alert, Spinner, Accordion, Navbar, Nav } from 'react-bootstrap';
+import { arrayMove } from '@dnd-kit/sortable';
 import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css';
 
@@ -27,6 +28,7 @@ function App() {
     return savedAdmin === 'true';
   });
   const [loginData, setLoginData] = useState({ username: '', password: '' });
+
 
 
   // Cargar productos al iniciar
@@ -291,6 +293,52 @@ function App() {
   };
 
 
+  // Función alternativa: mover productos con botones arriba/abajo
+  const moverProducto = async (productoId, direccion) => {
+    if (!isAdmin) return;
+
+    const categoriaProducto = productos.find(p => p.id === productoId)?.categorias?.nombre;
+    const productosCategoria = productos.filter(p => p.categorias?.nombre === categoriaProducto);
+
+    const currentIndex = productosCategoria.findIndex(p => p.id === productoId);
+    let newIndex;
+
+    if (direccion === 'up' && currentIndex > 0) {
+      newIndex = currentIndex - 1;
+    } else if (direccion === 'down' && currentIndex < productosCategoria.length - 1) {
+      newIndex = currentIndex + 1;
+    } else {
+      return; // No se puede mover
+    }
+
+    // Reordenar array
+    const reorderedProductos = arrayMove(productosCategoria, currentIndex, newIndex);
+
+    try {
+      const API_URL = getApiUrl();
+      console.log(`Moviendo producto ${direccion}...`);
+
+      // Actualizar órdenes
+      const updatePromises = reorderedProductos.map((producto, index) => {
+        return fetch(`${API_URL}/api/productos/orden/${producto.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orden: index }),
+        });
+      });
+
+      await Promise.all(updatePromises);
+      cargarProductos();
+      mostrarAlerta(`Producto movido hacia ${direccion === 'up' ? 'arriba' : 'abajo'}`, 'success');
+    } catch (error) {
+      console.error('Error moviendo producto:', error);
+      mostrarAlerta('Error al mover producto', 'danger');
+    }
+  };
+
+
 
   return (
     <>
@@ -306,7 +354,7 @@ function App() {
             />
           </Navbar.Brand>
           <Navbar.Brand href="#home" className="mx-auto navbar-title">
-            <span className="fw-bold text-primary">Gestión de Infaltables</span>
+            <span className="fw-bold text-primary">Gestión de Infaltables - Buraglia</span>
           </Navbar.Brand>
           <Nav className="ms-auto">
             {isAdmin ? (
@@ -371,14 +419,6 @@ function App() {
                   {isAdmin && (
                     <div className="table-responsive mb-3">
                       <Table striped bordered hover size="sm">
-                        {/* <thead className="table-dark">
-                          <tr>
-                            <th className="text-center"></th>
-                            <th>Producto</th>
-                            <th className="text-center">Stock</th>
-                            <th className="text-center">Acciones</th>
-                          </tr>
-                        </thead> */}
                       </Table>
                     </div>
                   )}
@@ -396,15 +436,7 @@ function App() {
                         <Accordion.Body>
                           <div className="table-responsive">
                             <Table striped bordered hover size="sm">
-                              <thead className="table-dark">
-                                <tr>
-                                  <th className="text-center">Imagen</th>
-                                  <th>Producto</th>
-                                  <th className="text-center">Stock</th>
-                                  {isAdmin && <th className="text-center">Acciones</th>}
-                                </tr>
-                              </thead>
-                                <tbody>
+                              <tbody>
                                 {productosCategoria.map((producto) => {
                                   const getStockStatus = (status) => {
                                     switch (status) {
@@ -419,7 +451,7 @@ function App() {
                                   const stockStatus = getStockStatus(producto.stock_status);
 
                                   return (
-                                    <tr key={producto.id}>
+                                    <tr key={producto.id} style={{cursor: isAdmin ? 'grab' : 'default'}}>
                                       <td className="text-center">
                                         {producto.imagen_url ? (
                                           <img
@@ -478,20 +510,38 @@ function App() {
                                             >
                                               🗑️
                                             </Button>
-                                            <span
-                                              className="text-muted"
-                                              style={{cursor: 'grab', fontSize: '12px'}}
-                                              title="Arrastrar para reordenar"
-                                            >
-                                              ⋮⋮
-                                            </span>
+                                            {/* Botones para mover productos arriba/abajo */}
+                                            <div className="d-flex flex-column gap-1">
+                                              <Button
+                                                variant="outline-secondary"
+                                                size="sm"
+                                                className="p-0"
+                                                style={{width: '20px', height: '15px', fontSize: '10px', lineHeight: '1'}}
+                                                onClick={() => moverProducto(producto.id, 'up')}
+                                                disabled={loading}
+                                                title="Mover arriba"
+                                              >
+                                                ▲
+                                              </Button>
+                                              <Button
+                                                variant="outline-secondary"
+                                                size="sm"
+                                                className="p-0"
+                                                style={{width: '20px', height: '15px', fontSize: '10px', lineHeight: '1'}}
+                                                onClick={() => moverProducto(producto.id, 'down')}
+                                                disabled={loading}
+                                                title="Mover abajo"
+                                              >
+                                                ▼
+                                              </Button>
+                                            </div>
                                           </div>
                                         </td>
                                       )}
                                     </tr>
                                   );
                                 })}
-                                </tbody>
+                              </tbody>
                             </Table>
                           </div>
                         </Accordion.Body>
@@ -519,7 +569,7 @@ function App() {
                   <Form.Label>Nombre del producto *</Form.Label>
                   <Form.Control
                     type="text"
-                    placeholder="Ej: Laptop Dell"
+                    placeholder="Ej: CIF DT BIOACTIVE LIMA 12X300ML"
                     value={nuevoProducto.nombre}
                     onChange={(e) => setNuevoProducto({...nuevoProducto, nombre: e.target.value})}
                     required
