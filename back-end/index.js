@@ -8,8 +8,21 @@ const PORT = process.env.PORT || 8080;
 // Forzar el puerto correcto en Railway
 const finalPort = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
-// Middleware
-app.use(cors());
+// Middleware CORS configurado para producción
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',           // Desarrollo local
+    'https://proyecto-unilever.netlify.app',  // Netlify (producción)
+    'https://proyecto-unilever.vercel.app',   // Vercel (alternativo)
+    /\.netlify\.app$/,                  // Cualquier subdominio de Netlify
+    /\.vercel\.app$/                    // Cualquier subdominio de Vercel
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rutas
