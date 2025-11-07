@@ -220,10 +220,10 @@ function App() {
     if (isAdmin) {
       return productos.filter(producto => producto.categorias?.nombre === categoriaNombre);
     }
-    // Si no es admin, mostrar solo productos críticos
+    // Si no es admin, mostrar productos críticos (sin stock, poco stock) y productos en depósito
     return productos.filter(producto =>
       producto.categorias?.nombre === categoriaNombre &&
-      (producto.stock_status === 'sin_stock' || producto.stock_status === 'poco_stock')
+      (producto.stock_status === 'sin_stock' || producto.stock_status === 'poco_stock' || producto.stock_status === 'mucho_stock')
     );
   };
 
@@ -272,8 +272,6 @@ function App() {
     const adminUser = process.env.REACT_APP_ADMIN_USER;
     const adminPass = process.env.REACT_APP_ADMIN_PASSWORD;
 
-    console.log('Credenciales esperadas:', adminUser, adminPass);
-    console.log('Credenciales ingresadas:', loginData.username, loginData.password);
 
     if (adminUser && adminPass && loginData.username === adminUser && loginData.password === adminPass) {
       setIsAdmin(true);
