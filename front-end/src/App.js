@@ -402,7 +402,7 @@ function App() {
                     alt="Cargando..."
                     className="unilever-spinner"
                   />
-                  <div className="mt-2 text-muted">Cargando...</div>
+                  <div className="mt-2 text-muted">Cargando... PUEDE TARDAR UNOS SEGUNDOS.</div>
                 </div>
               )}
 
