@@ -27,6 +27,7 @@ router.get('/', async (req, res) => {
           orden
         )
       `)
+      .order('orden', { ascending: true })
       .order('id', { ascending: true });
 
     if (error) throw error;
@@ -125,6 +126,27 @@ router.put('/orden/:id', async (req, res) => {
 
     if (error) throw error;
     res.json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint para actualizar orden de productos
+router.put('/orden/:id', async (req, res) => {
+  if (!supabase) {
+    return res.status(500).json({ error: 'Base de datos no configurada' });
+  }
+  try {
+    const { id } = req.params;
+    const { orden } = req.body;
+
+    const { error } = await supabase
+      .from('productos')
+      .update({ orden })
+      .eq('id', id);
+
+    if (error) throw error;
+    res.json({ message: 'Orden actualizado' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
